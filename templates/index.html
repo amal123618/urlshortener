@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}Shorten a URL{% endblock %}
+
+{% block content %}
+<div class="mt-10 bg-white p-6 rounded-2xl shadow">
+  <h1 class="text-2xl font-semibold mb-4">Create a short link</h1>
+  <form method="post" class="space-y-4">
+    {% csrf_token %}
+    <div>
+      <label class="block text-sm font-medium mb-1">Long URL</label>
+      {{ form.url }}
+      {% if form.url.errors %}
+        <p class="text-red-600 text-sm mt-1">{{ form.url.errors.0 }}</p>
+      {% endif %}
+    </div>
+    <div>
+      <label class="block text-sm font-medium mb-1">Custom code (optional)</label>
+      <p class="text-xs text-gray-500 mb-1">Up to 8 letters/numbers, e.g. <code>mydeal</code></p>
+      {{ form.custom_code }}
+      {% if form.custom_code.errors %}
+        <p class="text-red-600 text-sm mt-1">{{ form.custom_code.errors.0 }}</p>
+      {% endif %}
+    </div>
+    <button class="px-4 py-2 rounded-xl bg-gray-900 text-white hover:opacity-90">Shorten</button>
+  </form>
+</div>
+
+{% if short_url %}
+<div class="mt-6 bg-emerald-50 border border-emerald-200 p-5 rounded-xl">
+  <h2 class="font-semibold">Your short URL</h2>
+  <div class="flex items-center gap-2 mt-2">
+    <input id="shortUrl" class="w-full border rounded-lg px-3 py-2" value="{{ short_url }}" readonly>
+    <button id="copyBtn" class="px-3 py-2 rounded-lg bg-emerald-600 text-white">Copy</button>
+  </div>
+  <p class="text-xs text-gray-600 mt-2">Share the link above. It will redirect to your original URL.</p>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script>
+  document.getElementById("copyBtn")?.addEventListener("click", async () => {
+    const v = document.getElementById("shortUrl").value;
+    try { await navigator.clipboard.writeText(v); alert("Copied!"); }
+    catch { alert("Copy failed"); }
+  });
+</script>
+{% endblock %}
